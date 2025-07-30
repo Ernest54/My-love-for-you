@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Почуття в Рядках</title>
+  <style>
+    :root {
+      --primary: #e63946;
+      --primary-dark: #c1121f;
+      --secondary: #a8dadc;
+      --light: #f1faee;
+      --dark: #1d3557;
+      --paper-1: #fffacd;
+      --paper-2: #ffd1dc;
+      --paper-3: #b0e0e6;
+      --paper-4: #98fb98;
+      --paper-5: #e6e6fa;
+      --paper-6: #ffdab9;
+      --paper-7: #ffb6c1;
+      --paper-8: #afeeee;
+      --shadow: 0 2px 8px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--dark);
+      line-height: 1.6;
+      overflow-x: hidden;
+      height: 100vh;
+      background-image: url('фон листів.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      position: relative;
+      touch-action: manipulation;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      25% { transform: translateY(-10px) rotate(5deg) scale(1.05); }
+      50% { transform: translateY(-20px) rotate(0deg) scale(1.1); }
+      75% { transform: translateY(-10px) rotate(-5deg) scale(1.05); }
+      100% { transform: translateY(0) rotate(0deg) scale(1); }
+    }
+    @keyframes envelopeOpen {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+      100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    }
+    .envelope-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      z-index: 10;
+      transition: var(--transition);
+      width: 80vw;
+      max-width: 300px;
+    }
+    .envelope-container:hover {
+      transform: translate(-50%, -50%) scale(1.03);
+      filter: drop-shadow(0 5px 10px rgba(230, 57, 70, 0.3));
+    }
+    .envelope-open-animation {
+      animation: envelopeOpen 1s ease-out forwards;
+    }
+    .card {
+      width: 100%;
+      height: 50vw;
+      max-height: 180px;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      background-image: linear-gradient(to bottom right, #fff, #f8f8f8);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .card-content {
+      text-align: center;
+      padding: 15px;
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 6vw;
+      max-font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 5px;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .card-subtitle {
+      font-size: 4vw;
+      max-font-size: 1rem;
+      color: var(--dark);
+      font-style: italic;
+      opacity: 0.8;
+    }
+    .heart-seal {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .envelope-container:hover .heart-seal {
+      transform: scale(1.05) rotate(10deg);
+      background: var(--primary-dark);
+    }
+    .letters-app {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, rgba(241,250,238,0.95) 0%, rgba(168,218,220,0.9) 100%);
+      backdrop-filter: blur(5px);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      animation: fadeIn 0.5s ease-out;
+      overflow: hidden;
+    }
+    .app-header {
+      background: var(--primary);
+      color: white;
+      padding: 12px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
+    }
+    .app-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 5vw;
+      max-font-size: 1.5rem;
+      margin: 0;
+      text-align: center;
+    }
+    .app-subtitle {
+      font-size: 3.5vw;
+      max-font-size: 1rem;
+      opacity: 0.9;
+      margin-top: 4px;
+      text-align: center;
+      font-style: italic;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 6vw;
+      max-font-size: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      align-self: flex-end;
+      margin-top: 6px;
+    }
+    .close-btn:hover {
+      background: rgba(255,255,255,0.2);
+      transform: rotate(90deg);
+    }
+    .letters-container {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      overflow: hidden;
+      height: calc(100vh - 80px);
+    }
+    .letters-sidebar {
+      flex-grow: 1;
+      background: rgba(255,255,255,0.95);
+      padding: 15px;
+      overflow-y: auto;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .search-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 15px 10px 40px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 25px;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%231d3557" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.2);
+    }
+    .sort-options {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+      align-items: center;
+    }
+    .sort-btn {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: rgba(29,53,87,0.1);
+      color: var(--dark);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .sort-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    .sort-btn:hover {
+      background: rgba(29,53,87,0.2);
+    }
+    .sort-btn.active:hover {
+      background: var(--primary-dark);
+    }
+    .add-letter-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .add-letter-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+    .letters-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .letter-item {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .letter-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .letter-item-title {
+      font-weight: 600;
+      margin-bottom: 3px;
+      color: var(--dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.95rem;
+    }
+    .letter-item-date {
+      font-size: 0.75rem;
+      color: rgba(29,53,87,0.6);
+      margin-bottom: 5px;
+    }
+    .letter-item-preview {
+      font-size: 0.85rem;
+      color: rgba(29,53,87,0.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hearts-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .heart {
+      position: absolute;
+      opacity: 0;
+      animation: float 6s ease-in-out infinite;
+      user-select: none;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+      transform: translate(-50%, -50%);
+      font-size: 16px !important;
+    }
+    /* Модальне вікно */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .modal.show {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      overflow: hidden;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      background: var(--primary);
+      color: white;
+      padding: 12px 15px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 15px;
+      overflow-y: auto;
+      flex-grow: 1;
+      background: var(--light);
+    }
+    .modal-footer {
+      padding: 10px 15px;
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    .modal-btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      flex: 1;
+      font-size: 0.9rem;
+    }
+    .modal-view {
+      background: var(--primary);
+      color: white;
+    }
+    .modal-edit {
+      background: rgba(29,53,87,0.1);
+      color: var(--dark);
+    }
+    .modal-delete {
+      background: #e74c3c;
+      color: white;
+    }
+    .modal-cancel {
+      background: rgba(0,0,0,0.05);
+      color: var(--dark);
+    }
+    .editor-title-input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1.1rem;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 5px;
+      margin-bottom: 12px;
+      font-family: 'Playfair Display', serif;
+    }
+    .editor-title-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.2);
+    }
+    .editor-textarea {
+      width: 100%;
+      min-height: 20vh;
+      padding: 15px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 5px;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      resize: none;
+    }
+    .editor-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.2);
+    }
+    .editor-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 15px;
+      align-items: flex-start;
+    }
+    .color-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .color-option {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: var(--transition);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .color-option.selected {
+      border-color: var(--dark);
+      transform: scale(1.05);
+    }
+    .font-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      background: rgba(0,0,0,0.05);
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    .font-option:hover {
+      background: rgba(0,0,0,0.1);
+    }
+    .handwriting {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.2rem;
+      line-height: 1.8;
+    }
+    @media (max-width: 360px) {
+      .card-title {
+        font-size: 1.5rem;
+      }
+      .card-subtitle {
+        font-size: 0.9rem;
+      }
+      .editor-options {
+        gap: 8px;
+      }
+      .editor-btn {
+        padding: 8px 12px;
+      }
+    }
+    @media (orientation: portrait) {
+      .letters-sidebar {
+        height: auto;
+      }
+      .app-title {
+        font-size: 1.3rem;
+      }
+      .app-subtitle {
+        font-size: 0.9rem;
+      }
+    }
+    @media (orientation: landscape) {
+      .letters-container {
+        flex-direction: row;
+      }
+      .letters-sidebar {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="envelope-container" onclick="openLettersApp()">
+    <div class="card">
+      <div class="card-content">
+        <div class="card-title">Моє кохання</div>
+        <div class="card-subtitle">Натисни, щоб відкрити</div>
+      </div>
+      <div class="heart-seal">❤️</div>
+    </div>
+  </div>
+  <div class="hearts-container" id="heartsContainer"></div>
+  <div class="letters-app" id="lettersApp">
+    <div class="app-header">
+      <h1 class="app-title">Любов на Сторінках</h1>
+      <p class="app-subtitle">Кохаю. Пишу. Тобі.</p>
+      <button class="close-btn" id="closeBtn" onclick="closeLettersApp()">×</button>
+    </div>
+    <div class="letters-container">
+      <div class="letters-sidebar">
+        <div class="search-container">
+          <input type="text" class="search-input" placeholder="Пошук листів..." id="searchInput">
+        </div>
+        <div class="sort-options">
+          <button class="sort-btn active" onclick="sortLetters('newest')">Новіші</button>
+          <button class="sort-btn" onclick="sortLetters('oldest')">Старіші</button>
+        </div>
+        <button class="add-letter-btn" id="addLetterBtn">
+          <span>+</span> Новий лист
+        </button>
+        <div class="letters-list" id="lettersList"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Модальне вікно для перегляду листа -->
+  <div class="modal" id="viewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="viewModalTitle">Лист</span>
+        <button class="modal-close" onclick="closeViewModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="letter-content" id="viewModalContent" style="white-space: pre-wrap; line-height: 1.7;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-cancel" onclick="closeViewModal()">Закрити</button>
+        <button class="modal-btn modal-edit" onclick="editCurrentLetter()">Редагувати</button>
+        <button class="modal-btn modal-delete" onclick="deleteCurrentLetter()">Видалити</button>
+      </div>
+    </div>
+  </div>
+  <!-- Модальне вікно для створення/редагування -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="editModalTitle">Новий лист</span>
+        <button class="modal-close" onclick="closeEditModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="editor-title-input" id="modalTitle" placeholder="Заголовок листа">
+        <textarea class="editor-textarea" id="modalContent" placeholder="Напишіть ваше зізнання тут..."></textarea>
+        <div class="editor-options">
+          <div class="color-options" id="modalColorOptions"></div>
+          <div class="font-option">
+            <input type="checkbox" id="modalUseHandwriting">
+            <label for="modalUseHandwriting">Рукописний шрифт</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-cancel" onclick="closeEditModal()">Скасувати</button>
+        <button class="modal-btn modal-view" id="saveModalBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      doc, 
+      setDoc, 
+      deleteDoc,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyADY_wEIF2kJrX9dsM6hgD8aF3WtXk-O9g",
+      authDomain: "lovelettersapp-20938.firebaseapp.com",
+      projectId: "lovelettersapp-20938",
+      storageBucket: "lovelettersapp-20938.appspot.com",
+      messagingSenderId: "367081412718",
+      appId: "1:367081412718:web:950a6b72244b35cb4cee7f"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const state = {
+      letters: {},
+      currentLetterId: null,
+      selectedColor: 'var(--paper-1)',
+      sortBy: 'newest',
+      searchQuery: '',
+      paperColors: [
+        'var(--paper-1)', 'var(--paper-2)', 'var(--paper-3)',
+        'var(--paper-4)', 'var(--paper-5)', 'var(--paper-6)',
+        'var(--paper-7)', 'var(--paper-8)'
+      ]
+    };
+    document.addEventListener('DOMContentLoaded', function() {
+      createHearts();
+      initColorOptions();
+      setupRealTimeUpdates();
+      setupEventListeners();
+    });
+    function setupEventListeners() {
+      document.getElementById('addLetterBtn').addEventListener('click', openEditModalForNew);
+      document.getElementById('saveModalBtn').addEventListener('click', saveFromModal);
+      document.getElementById('searchInput').addEventListener('input', function() {
+        state.searchQuery = this.value.toLowerCase();
+        renderLettersList();
+      });
+    }
+    function setupRealTimeUpdates() {
+      const lettersRef = collection(db, 'love-letters');
+      onSnapshot(lettersRef, (snapshot) => {
+        state.letters = {};
+        snapshot.forEach((doc) => {
+          state.letters[doc.id] = doc.data();
+        });
+        renderLettersList();
+      });
+    }
+    function createHearts() {
+      const container = document.getElementById('heartsContainer');
+      const heartSymbols = ['❤️', '🧡', '💜', '🤍'];
+      const heartCount = 10;
+      for (let i = 0; i < heartCount; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.innerHTML = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.top = `${Math.random() * 100}%`;
+        heart.style.opacity = Math.random() * 0.5 + 0.3;
+        heart.style.animationDelay = `${Math.random() * 5}s`;
+        heart.style.animationDuration = `${Math.random() * 8 + 4}s`;
+        container.appendChild(heart);
+      }
+    }
+    function initColorOptions() {
+      const colorOptions = document.getElementById('modalColorOptions');
+      colorOptions.innerHTML = '';
+      state.paperColors.forEach(color => {
+        const colorOption = document.createElement('div');
+        colorOption.className = 'color-option';
+        colorOption.style.background = color;
+        colorOption.onclick = () => selectModalColor(color);
+        if (color === state.selectedColor) {
+          colorOption.classList.add('selected');
+        }
+        colorOptions.appendChild(colorOption);
+      });
+    }
+    function selectModalColor(color) {
+      state.selectedColor = color;
+      updateModalColorOptions();
+    }
+    function updateModalColorOptions() {
+      document.querySelectorAll('#modalColorOptions .color-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.style.background === state.selectedColor);
+      });
+    }
+    function renderLettersList() {
+      const lettersList = document.getElementById('lettersList');
+      lettersList.innerHTML = '';
+      const filteredLetters = Object.entries(state.letters)
+        .filter(([_, letter]) => letter && letter.content)
+        .filter(([_, letter]) => 
+          (letter.title && letter.title.toLowerCase().includes(state.searchQuery)) || 
+          (letter.content && letter.content.toLowerCase().includes(state.searchQuery))
+        )
+        .sort((a, b) => {
+          const dateA = a[1].createdAt?.seconds || a[1].date || 0;
+          const dateB = b[1].createdAt?.seconds || b[1].date || 0;
+          return state.sortBy === 'newest' ? dateB - dateA : dateA - dateB;
+        });
+      if (filteredLetters.length === 0) {
+        const noResultsText = state.searchQuery ? 
+          'Не знайдено листів за вашим запитом' : 
+          'У вас ще немає листів. Створіть перший!';
+        const emptyMessage = document.createElement('div');
+        emptyMessage.className = 'letter-item';
+        emptyMessage.textContent = noResultsText;
+        emptyMessage.style.textAlign = 'center';
+        emptyMessage.style.cursor = 'default';
+        lettersList.appendChild(emptyMessage);
+        return;
+      }
+      filteredLetters.forEach(([id, letter]) => {
+        const preview = letter.content.length > 50 
+          ? letter.content.substring(0, 50) + '...' 
+          : letter.content;
+        const letterElement = document.createElement('div');
+        letterElement.className = 'letter-item';
+        letterElement.style.background = letter.color || 'white';
+        letterElement.innerHTML = `
+          <div class="letter-item-title">${letter.title || 'Без назви'}</div>
+          <div class="letter-item-date">${formatDate(letter.createdAt?.seconds ? letter.createdAt.seconds * 1000 : letter.date)}</div>
+          <div class="letter-item-preview">${preview}</div>
+        `;
+        letterElement.addEventListener('click', () => openViewModal(id));
+        lettersList.appendChild(letterElement);
+      });
+    }
+    function openViewModal(letterId) {
+      const letter = state.letters[letterId];
+      if (!letter) return;
+      state.currentLetterId = letterId;
+      document.getElementById('viewModalTitle').textContent = letter.title || 'Лист';
+      document.getElementById('viewModalContent').textContent = letter.content;
+      document.getElementById('viewModalContent').style.background = letter.color || 'white';
+      if (letter.font === 'handwriting') {
+        document.getElementById('viewModalContent').classList.add('handwriting');
+      } else {
+        document.getElementById('viewModalContent').classList.remove('handwriting');
+      }
+      document.getElementById('viewModal').classList.add('show');
+    }
+    function closeViewModal() {
+      document.getElementById('viewModal').classList.remove('show');
+    }
+    function openEditModalForNew() {
+      document.getElementById('editModalTitle').textContent = 'Новий лист';
+      document.getElementById('modalTitle').value = '';
+      document.getElementById('modalContent').value = '';
+      state.selectedColor = 'var(--paper-1)';
+      document.getElementById('modalUseHandwriting').checked = false;
+      updateModalColorOptions();
+      document.getElementById('editModal').classList.add('show');
+      state.currentLetterId = null;
+    }
+    function openEditModalForEdit(letterId) {
+      const letter = state.letters[letterId];
+      if (!letter) {
+        console.error('Лист не знайдено:', letterId);
+        return;
+      }
+      document.getElementById('editModalTitle').textContent = 'Редагувати лист';
+      document.getElementById('modalTitle').value = letter.title || '';
+      document.getElementById('modalContent').value = letter.content || '';
+      state.selectedColor = letter.color || 'var(--paper-1)';
+      document.getElementById('modalUseHandwriting').checked = letter.font === 'handwriting';
+      updateModalColorOptions();
+      document.getElementById('editModal').classList.add('show');
+      state.currentLetterId = letterId;
+    }
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('show');
+    }
+    async function saveNewLetter() {
+      const title = document.getElementById('modalTitle').value.trim();
+      const content = document.getElementById('modalContent').value.trim();
+      if (!content) {
+        alert('Будь ласка, напишіть текст листа');
+        return;
+      }
+      try {
+        const letterId = Date.now().toString();
+        const letterData = {
+          title: title || 'Без назви',
+          content: content,
+          date: new Date().getTime(),
+          color: state.selectedColor,
+          font: document.getElementById('modalUseHandwriting').checked ? 'handwriting' : 'normal',
+          createdAt: serverTimestamp()
+        };
+        await setDoc(doc(db, 'love-letters', letterId), letterData);
+        closeEditModal();
+      } catch (error) {
+        console.error("Помилка збереження:", error);
+        alert("Не вдалося зберегти лист: " + error.message);
+      }
+    }
+    async function saveEditedLetter() {
+      const title = document.getElementById('modalTitle').value.trim();
+      const content = document.getElementById('modalContent').value.trim();
+      if (!content) {
+        alert('Будь ласка, напишіть текст листа');
+        return;
+      }
+      try {
+        const letterData = {
+          title: title || 'Без назви',
+          content: content,
+          date: new Date().getTime(),
+          color: state.selectedColor,
+          font: document.getElementById('modalUseHandwriting').checked ? 'handwriting' : 'normal',
+          createdAt: serverTimestamp()
+        };
+        await setDoc(doc(db, 'love-letters', state.currentLetterId), letterData);
+        closeEditModal();
+        closeViewModal();
+        state.currentLetterId = null;
+      } catch (error) {
+        console.error("Помилка збереження:", error);
+        alert("Не вдалося зберегти лист: " + error.message);
+      }
+    }
+    async function deleteCurrentLetter() {
+      if (!state.currentLetterId) return;
+      if (confirm('Ви впевнені, що хочете видалити цей лист?')) {
+        try {
+          await deleteDoc(doc(db, 'love-letters', state.currentLetterId));
+          closeViewModal();
+          state.currentLetterId = null;
+        } catch (error) {
+          console.error("Помилка видалення:", error);
+          alert("Не вдалося видалити лист: " + error.message);
+        }
+      }
+    }
+    function editCurrentLetter() {
+      if (!state.currentLetterId) {
+        console.error('Немає поточного листа для редагування');
+        return;
+      }
+      const letterIdToEdit = state.currentLetterId;
+      closeViewModal();
+      setTimeout(() => {
+        openEditModalForEdit(letterIdToEdit);
+      }, 300);
+    }
+    function saveFromModal() {
+      if (state.currentLetterId) {
+        saveEditedLetter();
+      } else {
+        saveNewLetter();
+      }
+    }
+    function formatDate(timestamp) {
+      return new Date(timestamp).toLocaleDateString('uk-UA', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+    // Глобальні функції
+    window.openLettersApp = function() {
+      const envelope = document.querySelector('.envelope-container');
+      envelope.classList.add('envelope-open-animation');
+      setTimeout(() => {
+        document.getElementById('lettersApp').style.display = 'flex';
+      }, 1000);
+    };
+    window.closeLettersApp = function() {
+      window.location.href = 'index.html';
+    };
+    window.hideLetterView = function() {
+      // Функція залишена для можливого використання в майбутньому
+    };
+    window.closeViewModal = closeViewModal;
+    window.closeEditModal = closeEditModal;
+    window.editCurrentLetter = editCurrentLetter;
+    window.deleteCurrentLetter = deleteCurrentLetter;
+    window.sortLetters = function(method) {
+      state.sortBy = method;
+      document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+      if (method === 'newest') {
+        document.querySelector('.sort-btn:nth-child(1)').classList.add('active');
+      } else {
+        document.querySelector('.sort-btn:nth-child(2)').classList.add('active');
+      }
+      renderLettersList();
+    };
+  </script>
+</body>
+</html>

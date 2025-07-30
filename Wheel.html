@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Причини кохання</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;500;700&display=swap');
+    :root {
+      --primary: #e91e63;
+      --secondary: #ff9e80;
+      --gold: #ffd700;
+      --dark: #1a1a2e;
+      --light: #f8f9fa;
+      --text: #333;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Зіркове небо */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 4s infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.2; transform: scale(0.8); }
+    }
+    /* Плаваючі серця */
+    .floating-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .floating-heart {
+      position: absolute;
+      color: rgba(255, 215, 0, 0.3);
+      font-size: 2rem;
+      opacity: 0.3;
+      pointer-events: none;
+      user-select: none;
+    }
+    @keyframes float-up {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+    }
+    /* Анімація для сердець після обертання */
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      font-size: 1.5rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+    /* Градієнтне світло */
+    .gradient-light {
+      position: fixed;
+      top: -100%;
+      left: -100%;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, rgba(233,30,99,0.05) 50%, transparent 70%);
+      z-index: 3;
+      animation: rotate 30s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+      z-index: 100;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 500;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 900px;
+      padding: 2rem;
+      margin-top: 50px;
+      z-index: 10;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      color: white;
+      text-align: center;
+      margin-bottom: 2rem;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      font-weight: 900;
+      letter-spacing: 1px;
+      position: relative;
+    }
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+    .subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.2rem;
+      margin-bottom: 3rem;
+      text-align: center;
+      max-width: 600px;
+      font-weight: 300;
+    }
+    /* Колесо фортуни */
+    .wheel-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 2rem auto;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      border: 8px solid var(--gold);
+    }
+    .wheel {
+      width: 100%;
+      height: 100%;
+      background: conic-gradient(
+        #6a11cb 0%, #2575fc 10%, #e91e63 20%, #ff9e80 30%, #ffd700 40%,
+        #4caf50 50%, #2196f3 60%, #9c27b0 70%, #00bcd4 80%, #ff5722 90%
+      );
+      border-radius: 50%;
+      transition: transform 5s cubic-bezier(0.17, 0.67, 0.21, 0.99);
+      transform: rotate(0deg);
+    }
+    .pointer {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 30px solid var(--gold);
+      z-index: 10;
+    }
+    .reason-btn {
+      margin-top: 2rem;
+      padding: 1.2rem 3rem;
+      font-size: 1.3rem;
+      background: var(--gold);
+      color: var(--dark);
+      border: none;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+      font-weight: 700;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+    .reason-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(255, 215, 0, 0.6);
+    }
+    /* Модальне вікно */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal.show {
+      display: flex;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-content {
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+      padding: 3rem;
+      border-radius: 25px;
+      max-width: 90%;
+      width: 450px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    .modal.show .modal-content {
+      animation: popIn 0.6s ease forwards;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.3s ease;
+    }
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      transform: scale(1.1);
+    }
+    .reason-text {
+      font-size: 1.4rem;
+      line-height: 1.8;
+      color: white;
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      margin: 1rem 0;
+    }
+    @media (max-width: 768px) {
+      h1 { font-size: 2.5rem; }
+      .subtitle { font-size: 1rem; }
+      .wheel-container { width: 250px; height: 250px; }
+      .modal-content { padding: 2rem; width: 90%; }
+      .reason-text { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="window.location.href='index.html'">← Назад</button>
+
+  <!-- Ефекти -->
+  <div class="stars" id="stars"></div>
+  <div class="floating-hearts" id="floatingHearts"></div>
+  <div class="gradient-light"></div>
+
+  <div class="container">
+    <h1>Причини кохання</h1>
+    <p class="subtitle">Крутни колесо і дізнайся, чому я тебе люблю</p>
+
+    <div class="wheel-container">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheel"></div>
+    </div>
+
+    <button class="reason-btn" id="spinBtn">Крутити колесо!</button>
+  </div>
+
+  <!-- Модальне вікно -->
+  <div class="modal" id="resultModal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModal">&times;</button>
+      <p class="reason-text" id="reasonText">Тестова причина</p>
+    </div>
+  </div>
+
+  <!-- Музика -->
+  <audio id="music" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // 100 причин
+    const reasons = [
+      "Тому що твоє обличчя — це мій улюблений пейзаж.",
+      "Тому що ти смієшся навіть тоді, коли все погано.",
+      "Тому що твої очі світяться, коли ти розповідаєш про свої мрії.",
+      "Тому що ти завжди пам'ятаєш, як я люблю каву.",
+      "Тому що ти обіймаєш мене так, ніби я — найцінніша людина на світі.",
+      "Тому що ти перший, кому я хочу подзвонити вранці.",
+      "Тому що ти знаєш усі мої слабкості і все одно вважаєш мене сильним.",
+      "Тому що ти вмієш слухати мовчки, просто тримаючи за руку.",
+      "Тому що ти робиш мене кращою людиною.",
+      "Тому що ти завжди знаєш, як зняти напругу жартом.",
+      // ... (решта 90 причин — як у вашому файлі)
+      "Тому що ти вмієш слухати мою душу."
+    ];
+
+    // DOM
+    const spinBtn = document.getElementById('spinBtn');
+    const wheel = document.getElementById('wheel');
+    const resultModal = document.getElementById('resultModal');
+    const reasonText = document.getElementById('reasonText');
+    const closeModal = document.getElementById('closeModal');
+    const music = document.getElementById('music');
+
+    // Створюємо зірки
+    function createStars() {
+      const stars = document.getElementById('stars');
+      for (let i = 0; i < 100; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.top = Math.random() * 100 + 'vh';
+        star.style.width = star.style.height = Math.random() * 3 + 'px';
+        star.style.animationDelay = Math.random() * 5 + 's';
+        stars.appendChild(star);
+      }
+    }
+
+    // Автовідтворення музики
+    window.addEventListener('load', () => {
+      music.play().catch(e => {
+        console.log("Музика заблокована. Чекаємо на дію користувача.");
+        document.body.addEventListener('click', () => music.play(), { once: true });
+      });
+    });
+
+    // Крутити колесо
+    function spinWheel() {
+      spinBtn.disabled = true;
+      spinBtn.textContent = "Кручу...";
+
+      const randomIndex = Math.floor(Math.random() * reasons.length);
+      const spinDegrees = 3600 + (360 - (randomIndex * 3.6)); // 3.6° на сектор (100 причин = 3.6°)
+      wheel.style.transform = `rotate(${spinDegrees}deg)`;
+
+      // Після завершення анімації
+      setTimeout(() => {
+        reasonText.textContent = reasons[randomIndex];
+        resultModal.classList.add('show');
+
+        // Ефект сердець
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animation = `float 3s ease ${Math.random() * 0.5}s forwards`;
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 3000);
+          }, i * 200);
+        }
+
+        spinBtn.disabled = false;
+        spinBtn.textContent = "Крутити ще!";
+      }, 5000); // Має бути таке ж, як у transition (5s)
+    }
+
+    // Обробники
+    spinBtn.addEventListener('click', spinWheel);
+    closeModal.addEventListener('click', () => resultModal.classList.remove('show'));
+    resultModal.addEventListener('click', (e) => {
+      if (e.target === resultModal) resultModal.classList.remove('show');
+    });
+
+    // Ініціалізація
+    createStars();
+  </script>
+</body>
+</html>

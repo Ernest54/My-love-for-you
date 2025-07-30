@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тільки не плач❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Кнопка назад */
+        .back-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 50px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            text-decoration: none;
+            text-align: center;
+            width: auto;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Фонові серця */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            color: rgba(255, 182, 193, 0.3);
+            font-size: 20px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Основний контейнер */
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        /* Слайди */
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 800px;
+            height: 60vh;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            transition: filter 1s ease;
+            filter: blur(8px);
+        }
+
+        .slide img.clear {
+            filter: blur(0);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Навігація */
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .prev {
+            left: 15px;
+        }
+
+        .next {
+            right: 15px;
+        }
+
+        /* Індикатори слайдів */
+        .slide-indicators {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        /* Кнопка старту */
+        .start-btn {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 80%;
+            max-width: 250px;
+            justify-content: center;
+        }
+
+        .start-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        /* Кнопка музики */
+        .music-toggle-container {
+            position: absolute;
+            bottom: 70px;
+            right: 15px;
+            z-index: 10;
+        }
+
+        .music-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: rgba(255, 255, 255, 0.2);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Меню музики */
+        .music-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 20;
+            padding: 20px;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .music-menu.open {
+            transform: translateX(100%);
+        }
+
+        .music-menu h3 {
+            margin: 30px 0 20px;
+            font-weight: 300;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .track-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .track-item {
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .track-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .track-item.active {
+            background: rgba(255, 182, 193, 0.5);
+        }
+
+        /* Заголовок */
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8em;
+            font-weight: 300;
+            text-align: center;
+            z-index: 5;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            animation: titleGlow 3s ease-in-out infinite;
+            width: 90%;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Завантаження */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Кнопка закриття меню */
+        .close-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 21;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Адаптивність */
+        @media (max-width: 768px) {
+            .slide {
+                width: 95%;
+                height: 55vh;
+            }
+
+            .title {
+                font-size: 1.5em;
+                top: 15px;
+            }
+
+            .nav-button {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+
+            .start-btn {
+                font-size: 15px;
+                padding: 10px 20px;
+                bottom: 60px;
+            }
+
+            .music-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .slide-indicators {
+                bottom: 110px;
+            }
+
+            .back-btn {
+                top: 10px;
+                left: 10px;
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide {
+                height: 50vh;
+            }
+
+            .title {
+                font-size: 1.3em;
+                top: 10px;
+            }
+
+            .start-btn {
+                font-size: 14px;
+                padding: 8px 16px;
+                bottom: 50px;
+            }
+
+            .slide-indicators {
+                bottom: 100px;
+            }
+
+            .track-item {
+                padding: 12px;
+                font-size: 1em;
+            }
+
+            .back-btn {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .slide {
+                height: 45vh;
+            }
+
+            .title {
+                top: 10px;
+                font-size: 1.2em;
+            }
+
+            .slide-indicators {
+                bottom: 90px;
+            }
+
+            .start-btn {
+                bottom: 40px;
+            }
+
+            .back-btn {
+                top: 5px;
+                left: 5px;
+            }
+        }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="floating-hearts"></div>
+    
+    <!-- Кнопка назад -->
+    <a href="memory.html" class="back-btn">← Назад</a>
+    
+    <h1 class="title">Our Love Story ❤️</h1>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Завантаження спогадів...</p>
+    </div>
+
+    <div class="slideshow-container" id="slideshow" style="display: none;">
+        <button class="nav-button prev" id="prevBtn">‹</button>
+        <button class="nav-button next" id="nextBtn">›</button>
+        
+        <!-- Slides will be added dynamically here -->
+        <div id="slidesContainer"></div>
+        
+        <!-- Indicators will be added dynamically here -->
+        <div class="slide-indicators" id="indicatorsContainer"></div>
+        
+        <button class="start-btn" id="startBtn">
+            <span id="startBtnText">Почати слайдшоу</span>
+        </button>
+        <div class="music-toggle-container">
+            <button class="music-toggle" id="musicToggle">🎵</button>
+        </div>
+    </div>
+
+    <!-- Меню музики -->
+    <div class="music-menu" id="musicMenu">
+        <button class="close-menu" id="closeMenuBtn">×</button>
+        <h3>Оберіть музику</h3>
+        <ul class="track-list" id="trackList">
+            <li class="track-item active" data-track="0">Die With A Smile</li>
+            <li class="track-item" data-track="1">Бонни и Клайд</li>
+            <li class="track-item" data-track="2">Those Eyes</li>
+            <li class="track-item" data-track="3">Красота</li>
+            <li class="track-item" data-track="4">Я всегда с тобой</li>
+            <li class="track-item" data-track="5">Я люблю тебя</li>
+            <li class="track-item" data-track="6">Мій дім це ти</li>
+            <li class="track-item" data-track="7">Это Любовь</li>
+        </ul>
+    </div>
+
+    <!-- Фонова музика -->
+    <audio id="bg-music" loop></audio>
+
+    <script>
+        // Firebase configuration and initialization
+        const firebaseConfig = {
+            apiKey: "AIzaSyCa3lKY8xOIviS9qnZ6-ej-pk_DM-P1guI",
+            authDomain: "memory-e957a.firebaseapp.com",
+            projectId: "memory-e957a",
+            storageBucket: "memory-e957a.appspot.com",
+            messagingSenderId: "512900159445",
+            appId: "1:512900159445:web:6d7643f7d98db861bd8f5c"
+        };
+
+         // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+
+        // Глобальні змінні
+        let currentSlide = 0;
+        let autoplayInterval;
+        let slideshowStarted = false;
+        let currentTrackIndex = 0;
+        let isMusicPlaying = false;
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let photoUrls = [];
+        let slides = [];
+        let indicators = [];
+
+        // Список треків
+        const tracks = [
+            { title: "Die With A Smile", url: "die with a smile.mp3" },
+            { title: "Бонни и Клайд", url: "MiyaGi & Эндшпиль - Бонни и Клайд.mp3" },
+            { title: "Those Eyes", url: "New West - Those Eyes.mp3" },
+            { title: "Красота", url: "Мария Чайковская - Красота.mp3" },
+            { title: "Я всегда с тобой", url: "Мария Чайковская - Я всегда с тобой.mp3" },
+            { title: "Я люблю тебя", url: "Мария Чайковская - Я люблю тебя.mp3" },
+            { title: "Мій дім це ти", url: "Мій дім це ти.mp3" },
+            { title: "Это Любовь", url: "Скриптонит - Это Любовь.mp3" }
+        ];
+
+        // DOM елементи
+        const loading = document.getElementById('loading');
+        const slideshow = document.getElementById('slideshow');
+        const slidesContainer = document.getElementById('slidesContainer');
+        const indicatorsContainer = document.getElementById('indicatorsContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const startBtn = document.getElementById('startBtn');
+        const startBtnText = document.getElementById('startBtnText');
+        const musicToggle = document.getElementById('musicToggle');
+        const musicMenu = document.getElementById('musicMenu');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        const trackItems = document.querySelectorAll('.track-item');
+        const bgMusic = document.getElementById('bg-music');
+
+        // Функція для створення слайдів
+        function createSlides(photosCount) {
+            // Очистити контейнери
+            slidesContainer.innerHTML = '';
+            indicatorsContainer.innerHTML = '';
+            
+            // Створити слайди та індикатори
+            for (let i = 0; i < photosCount; i++) {
+                // Створити слайд
+                const slide = document.createElement('div');
+                slide.className = i === 0 ? 'slide active' : 'slide';
+                
+                const img = document.createElement('img');
+                img.src = photoUrls[i] || getDefaultPhoto(i);
+                img.alt = `Love photo ${i + 1}`;
+                img.onerror = function() {
+                    this.src = getDefaultPhoto(i);
+                };
+                
+                slide.appendChild(img);
+                slidesContainer.appendChild(slide);
+                
+                // Створити індикатор
+                const indicator = document.createElement('div');
+                indicator.className = i === 0 ? 'indicator active' : 'indicator';
+                indicator.dataset.index = i;
+                indicatorsContainer.appendChild(indicator);
+            }
+            
+             // Оновити посилання на слайди та індикатори
+            slides = document.querySelectorAll('.slide');
+            indicators = document.querySelectorAll('.indicator');
+            
+            // Додати обробники подій для індикаторів
+            indicators.forEach(indicator => {
+                indicator.addEventListener('click', () => {
+                    if (slideshowStarted) {
+                        goToSlide(parseInt(indicator.dataset.index));
+                    }
+                });
+            });
+        }
+
+        // Функція для завантаження фото з Firestore
+        async function loadPhotosFromFirebase() {
+            try {
+                console.log("Початок завантаження фото з Firestore...");
+                const photosSnapshot = await db.collection("photos").get();
+                
+                if (photosSnapshot.empty) {
+                    console.warn("У Firestore не знайдено жодного фото");
+                    useDefaultPhotos();
+                    return;
+                }
+                
+                // Отримуємо URL з усіх документів
+                photoUrls = [];
+                photosSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    console.log("Отримано документ:", doc.id, data);
+                    
+                    // Перевіряємо наявність URL у різних форматах
+                    let photoUrl = data.url || data.imageUrl || data.photoUrl || data.link;
+                    
+                    if (photoUrl) {
+                        // Якщо URL відносний (без домену Cloudinary)
+                        if (!photoUrl.startsWith('http') && !photoUrl.includes('res.cloudinary.com')) {
+                            photoUrl = `https://res.cloudinary.com/YOUR_CLOUD_NAME/${photoUrl}`;
+                        }
+                        
+                        // Додаємо параметр для уникнення кешування
+                        photoUrl += (photoUrl.includes('?') ? '&' : '?');
+                        photoUrl += `t=${Date.now()}`;
+                        
+                        photoUrls.push(photoUrl);
+                    }
+                });
+                
+                if (photoUrls.length === 0) {
+                    console.warn("Не знайдено жодного валідного URL фото");
+                    useDefaultPhotos();
+                    return;
+                }
+                
+                console.log("Успішно завантажено URL фото:", photoUrls);
+                createSlides(photoUrls.length);
+                updateSlidesWithPhotos();
+                
+                // Приховуємо індикатор завантаження та показуємо слайдшоу
+                loading.style.display = 'none';
+                slideshow.style.display = 'flex';
+            } catch (error) {
+                console.error("Помилка завантаження фото:", error);
+                useDefaultPhotos();
+            }
+        }
+        
+        // Функція для оновлення слайдів з отриманими фото
+        function updateSlidesWithPhotos() {
+            const slideImages = document.querySelectorAll('.slide img');
+            
+            slideImages.forEach((img, index) => {
+                if (photoUrls[index]) {
+                    // Додаємо параметр для уникнення кешування
+                    img.src = `${photoUrls[index]}?${Date.now()}`;
+                    img.onerror = function() {
+                        console.error("Помилка завантаження фото:", this.src);
+                        this.src = getDefaultPhoto(index);
+                    };
+                } else {
+                    img.src = getDefaultPhoto(index);
+                }
+            });
+        }
+
+        // Функція для отримання фото за замовчуванням
+        function getDefaultPhoto(index) {
+            const defaultPhotos = [
+                "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                "https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            ];
+            return defaultPhotos[index % defaultPhotos.length] || defaultPhotos[0];
+        }
+
+        // Функція для використання фото за замовчуванням
+        function useDefaultPhotos() {
+            console.log("Використовуються фото за замовчуванням");
+            // Використовуємо 4 фото за замовчуванням
+            createSlides(4);
+            const slideImages = document.querySelectorAll('.slide img');
+            slideImages.forEach((img, index) => {
+                img.src = getDefaultPhoto(index);
+            });
+            
+            // Приховуємо індикатор завантаження та показуємо слайдшоу
+            loading.style.display = 'none';
+            slideshow.style.display = 'flex';
+        }
+
+        // Створення фонових сердець
+        function createFloatingHearts() {
+            const heartsContainer = document.querySelector('.floating-hearts');
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+                heartsContainer.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 8000);
+            }, 300);
+        }
+
+        // Початок/зупинка слайдшоу
+        function toggleSlideshow() {
+            if (!slideshowStarted) {
+                slideshowStarted = true;
+                startBtnText.textContent = 'Зупинити слайдшоу';
+                
+                // Прибрати блюр
+                document.querySelectorAll('.slide img').forEach(img => {
+                    img.classList.add('clear');
+                });
+                
+                // Запустити музику
+                playMusic();
+                
+                // Запустити автопрогравання
+                startAutoplay();
+            } else {
+                slideshowStarted = false;
+                startBtnText.textContent = 'Почати слайдшоу';
+                
+                // Додати блюр
+                document.querySelectorAll('.slide img').forEach(img => {
+                    img.classList.remove('clear');
+                });
+                
+                // Зупинити музику
+                stopMusic();
+                
+                // Зупинити автопрогравання
+                clearInterval(autoplayInterval);
+            }
+        }
+
+        // Відтворення музики
+        function playMusic() {
+            if (bgMusic.src) {
+                bgMusic.play().catch(error => {
+                    console.error("Помилка відтворення музики:", error);
+                    // Якщо браузер блокує автоматичне відтворення
+                    alert("Будь ласка, натисніть 'OK' для дозволу відтворення музики");
+                    bgMusic.play();
+                });
+            }
+            isMusicPlaying = true;
+        }
+
+        // Зупинка музики
+        function stopMusic() {
+            bgMusic.pause();
+            isMusicPlaying = false;
+        }
+
+        // Зміна треку
+        function changeTrack(trackIndex) {
+            currentTrackIndex = trackIndex;
+            
+            trackItems.forEach((item, i) => {
+                if (i === trackIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            bgMusic.src = tracks[trackIndex].url;
+            bgMusic.load();
+            
+            if (isMusicPlaying) {
+                bgMusic.play().catch(error => {
+                    console.error("Помилка відтворення музики:", error);
+                });
+            }
+        }
+
+        // Перехід до слайду
+        function goToSlide(index) {
+            if (!slideshowStarted) return;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(ind => ind.classList.remove('active'));
+            
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            indicators[currentSlide].classList.add('active');
+        }
+
+        // Наступний слайд
+        function nextSlide() {
+            const next = (currentSlide + 1) % slides.length;
+            goToSlide(next);
+        }
+
+        // Попередній слайд
+        function prevSlide() {
+            const prev = (currentSlide - 1 + slides.length) % slides.length;
+            goToSlide(prev);
+        }
+
+        // Автовідтворення
+        function startAutoplay() {
+            if (autoplayInterval) clearInterval(autoplayInterval);
+            autoplayInterval = setInterval(nextSlide, 4000);
+        }
+
+        // Touch жести
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }
+
+        function handleSwipe() {
+            if (!slideshowStarted) return;
+            
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // Перемикання музичного меню
+        function toggleMusicMenu() {
+            musicMenu.classList.toggle('open');
+        }
+
+        // Обробники подій
+        prevBtn.addEventListener('click', () => {
+            if (slideshowStarted) prevSlide();
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (slideshowStarted) nextSlide();
+        });
+        
+        startBtn.addEventListener('click', toggleSlideshow);
+        musicToggle.addEventListener('click', toggleMusicMenu);
+        closeMenuBtn.addEventListener('click', toggleMusicMenu);
+
+        // Обробники вибору треку
+        trackItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const trackIndex = parseInt(item.getAttribute('data-track'));
+                changeTrack(trackIndex);
+                
+                // Закрити меню після вибору треку
+                toggleMusicMenu();
+            });
+        });
+
+        // Автоматична зміна треків
+        bgMusic.addEventListener('ended', () => {
+            const nextTrackIndex = (currentTrackIndex + 1) % tracks.length;
+            changeTrack(nextTrackIndex);
+        });
+
+        // Touch події
+        document.addEventListener('touchstart', handleTouchStart, { passive: true });
+        document.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+        // Ініціалізація
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingHearts();
+            loadPhotosFromFirebase(); // Виправлено: викликаємо правильну функцію
+            
+            // Завантажуємо перший трек одразу
+            bgMusic.src = tracks[0].url;
+            bgMusic.load();
+        });
+    </script>
+</body>
+</html>
